@@ -11,7 +11,13 @@ public class QryopScore extends Qryop {
    */
   public QryopScore(Qryop q) {
     this.args.add(q);
+    algorithm = q.algorithm;
   }
+  
+  public QryopScore(RetrievalAlgorithm algo) {
+    algorithm = algo;
+  }
+
 
   /**
    * Evaluate the query operator.
@@ -23,7 +29,11 @@ public class QryopScore extends Qryop {
     if (result.isScoreList())
       return result;
     
-    // Each pass of the loop computes a score for one document. Note: If the evaluate operation
+    return scoring(result);
+  }
+  
+  public QryResult scoring(QryResult result) {
+ // Each pass of the loop computes a score for one document. Note: If the evaluate operation
     // above returned a score list (which is very possible), this loop gets skipped.
     for (int i = 0; i < result.invertedList.df; i++) {
 
