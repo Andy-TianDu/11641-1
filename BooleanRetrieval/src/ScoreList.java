@@ -3,6 +3,7 @@
  */
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class ScoreList {
@@ -10,13 +11,21 @@ public class ScoreList {
   /**
    * A little utilty class to create a <docid, score> object.
    */
-  protected class ScoreListEntry {
+  protected class ScoreListEntry implements Comparable<ScoreListEntry>{
     private int docid;
     private float score;
 
     private ScoreListEntry(int docid, float score) {
       this.docid = docid;
       this.score = score;
+    }
+
+    @Override
+    public int compareTo(ScoreListEntry entry) {
+      int retVal = (int) (entry.score - score);
+      if (retVal == 0)
+        return docid - entry.docid;
+      return retVal;
     }
   }
 
@@ -43,5 +52,8 @@ public class ScoreList {
   public int getScoreListLength() {
     return scores.size();
   }
-
+  
+  public void sort(){
+    Collections.sort(scores);
+  }
 }

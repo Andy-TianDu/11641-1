@@ -4,13 +4,13 @@ public class QryopOr extends Qryop {
 
   @Override
   public QryResult evaluate() throws IOException {
-    Qryop impliedQryOp = new QryopScore(args.get(0));
+    Qryop impliedQryOp = new QryopScore(args.get(0), algorithm);
     QryResult result = impliedQryOp.evaluate();
 
     // Each pass of the loop evaluates one query argument.
     for (int i = 1; i < args.size(); i++) {
 
-      impliedQryOp = new QryopScore(args.get(i));
+      impliedQryOp = new QryopScore(args.get(i), algorithm);
       QryResult iResult = impliedQryOp.evaluate();
 
       // Use the results of the i'th argument to incrementally compute the query operator.
@@ -45,7 +45,7 @@ public class QryopOr extends Qryop {
                 result.docScores.getDocidScore(rDoc));
         rDoc++;
       }
-      while (iDoc < iResult.docScores.getDocid(iDoc)) {
+      while (iDoc < iResult.docScores.scores.size()) {
         tempResult.docScores.add(iResult.docScores.getDocid(iDoc),
                 iResult.docScores.getDocidScore(iDoc));
         iDoc++;

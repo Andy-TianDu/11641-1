@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.util.LinkedList;
 
 public class QueryParser {
@@ -5,7 +6,7 @@ public class QueryParser {
   private RetrievalAlgorithm algorithm;
   public QueryParser(String str, String algo) {
     queryString = str;
-    if (algo.equals("UnrankedBooelean")) {
+    if (algo.equals("UnrankedBoolean")) {
       algorithm = RetrievalAlgorithm.UnrankedBoolean;
     }
     else {
@@ -19,8 +20,9 @@ public class QueryParser {
    * @param queryString
    *          trimmed query string
    * @return query operator
+   * @throws IOException 
    */
-  public Qryop parse() {
+  public Qryop parse() throws IOException {
     int i = 0;
     Qryop crtOp = null; // operator of the current top level in the query parse tree
     char cur;
@@ -31,7 +33,7 @@ public class QueryParser {
       i++;
     
     if (queryString.charAt(i) != '#') {
-      crtOp = new QryopOr();
+      crtOp = new QryopOr(); //TODO modify
       crtOp.setRetrievalAlgorithm(algorithm);
     }
 
@@ -86,10 +88,16 @@ public class QueryParser {
         String termString = queryString.substring(i, wordEnd);
         String[] strArr = termString.split("\\.");
         Qryop termQuery;
+        String processedTerms[] = QryEval.tokenizeQuery(strArr[0]);
+        if (processedTerms.length == 0){ //stop words
+          i = wordEnd;
+          continue;
+        }
+        String term = processedTerms[0];
         if (strArr.length == 2) // contains field
-          termQuery = new QryopTerm(strArr[0], strArr[1]);
+          termQuery = new QryopTerm(term, strArr[1]);
         else
-          termQuery = new QryopTerm(strArr[0]);
+          termQuery = new QryopTerm(term);
         crtOp.addQryop(termQuery);
         i = wordEnd;
       }
@@ -97,8 +105,8 @@ public class QueryParser {
     return crtOp;
   }
   
-  public static void main(String args[]) {
-    String queryStr = "#AND(#OR(aa bb) cc   #NEAR/3(dd ee))"; 
+  public static void main(String args[]) throws Exception {
+    String queryStr = "#AND(#OR(aa parsed) cc   #NEAR/3(dd ee))"; 
     QueryParser parser = new QueryParser(queryStr, "UnrankedBoolean");
     Qryop op = parser.parse();
     System.out.println(op);

@@ -37,7 +37,7 @@ public class QryopNear extends Qryop {
               rPos++;
             } else if (rPosting.positions.get(rPos) > iPosting.positions.get(iPos)) {
               iPos++;
-            } else { //position matched
+            } else { // position matched
               tmpPosting.addPosition(iPosting.positions.get(iPos));
               iPos++;
               rPos++;

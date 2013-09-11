@@ -9,15 +9,14 @@ public class QryopScore extends Qryop {
   /**
    * The SCORE operator accepts just one argument.
    */
-  public QryopScore(Qryop q) {
+  public QryopScore(Qryop q, RetrievalAlgorithm algo) {
     this.args.add(q);
-    algorithm = q.algorithm;
-  }
-  
-  public QryopScore(RetrievalAlgorithm algo) {
     algorithm = algo;
   }
 
+  public QryopScore(RetrievalAlgorithm algo) {
+    algorithm = algo;
+  }
 
   /**
    * Evaluate the query operator.
@@ -28,19 +27,20 @@ public class QryopScore extends Qryop {
     QryResult result = args.get(0).evaluate();
     if (result.isScoreList())
       return result;
-    
+
     return scoring(result);
   }
-  
+
   public QryResult scoring(QryResult result) {
- // Each pass of the loop computes a score for one document. Note: If the evaluate operation
+    // Each pass of the loop computes a score for one document. Note: If the evaluate operation
     // above returned a score list (which is very possible), this loop gets skipped.
     for (int i = 0; i < result.invertedList.df; i++) {
 
       // DIFFERENT RETRIEVAL MODELS IMPLEMENT THIS DIFFERENTLY.
       // Unranked Boolean. All matching documents get a score of 1.0.
-      if (algorithm == RetrievalAlgorithm.UnrankedBoolean)
+      if (algorithm == RetrievalAlgorithm.UnrankedBoolean) {
         result.docScores.add(result.invertedList.postings.get(i).docid, (float) 1.0);
+      }
       // Ranked Boolean. Assign term frequency as the score
       else
         result.docScores.add(result.invertedList.postings.get(i).docid,
