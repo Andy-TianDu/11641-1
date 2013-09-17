@@ -25,12 +25,18 @@ public class QryopScore extends Qryop {
 
     // Evaluate the query argument.
     QryResult result = args.get(0).evaluate();
-    if (result.isScoreList())
+    if (result.isScoreList()) //test if the result already has a scores list
       return result;
 
     return scoring(result);
   }
-
+  
+  /**
+   * add score list to the result
+   * this method is only called when param result does not contains a scores list
+   * @param result
+   * @return
+   */
   public QryResult scoring(QryResult result) {
     // Each pass of the loop computes a score for one document. Note: If the evaluate operation
     // above returned a score list (which is very possible), this loop gets skipped.

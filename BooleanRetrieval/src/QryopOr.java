@@ -1,5 +1,11 @@
 import java.io.IOException;
 
+/**
+ * Query Or 
+ * 
+ * @author Siping Ji <sipingji@cmu.edu>
+ *
+ */
 public class QryopOr extends Qryop {
 
   @Override
@@ -19,9 +25,12 @@ public class QryopOr extends Qryop {
       int rDoc = 0; /* Index of a document in result. */
       int iDoc = 0; /* Index of a document in iResult. */
       QryResult tempResult = new QryResult();
+      
+      // walk through score lists
+      // add the doc to the new scored list if it's in either score list
       while (rDoc < result.docScores.scores.size() && iDoc < iResult.docScores.scores.size()) {
         if (result.docScores.getDocid(rDoc) == iResult.docScores.getDocid(iDoc)) {
-          if (algorithm == RetrievalAlgorithm.RankedBoolean)
+          if (algorithm == RetrievalAlgorithm.RankedBoolean) // ranked boolean, compute Max score
             tempResult.docScores.add(
                     result.docScores.getDocid(rDoc),
                     Math.max(result.docScores.getDocidScore(rDoc),
@@ -40,6 +49,7 @@ public class QryopOr extends Qryop {
           iDoc++;
         }
       }
+      // walk through the rest of the score list
       while (rDoc < result.docScores.scores.size()) {
         tempResult.docScores.add(result.docScores.getDocid(rDoc),
                 result.docScores.getDocidScore(rDoc));

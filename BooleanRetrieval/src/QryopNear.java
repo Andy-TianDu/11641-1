@@ -1,8 +1,14 @@
 import java.io.IOException;
 
+/**
+ * near opearator
+ * 
+ * @author Siping Ji <sipingji@cmu.edu>
+ *
+ */
 public class QryopNear extends Qryop {
 
-  private int neighbor;
+  private int neighbor;	
 
   public QryopNear(int n) {
     neighbor = n;
@@ -13,12 +19,14 @@ public class QryopNear extends Qryop {
 
     QryResult result = args.get(0).evaluate();
 
+    // each pass evaluates one query operator
     for (int i = 1; i < args.size(); i++) {
       QryResult iResult = args.get(i).evaluate();
 
       int rDoc = 0;
       int iDoc = 0;
       QryResult tempResult = new QryResult();
+      // walk through inverted lists of both terms to see if there is a match of documents
       while (rDoc < result.invertedList.df && iDoc < iResult.invertedList.df) {
         int rDocId = result.invertedList.postings.get(rDoc).docid;
         int iDocId = iResult.invertedList.postings.get(iDoc).docid;
@@ -32,6 +40,8 @@ public class QryopNear extends Qryop {
           DocPosting rPosting = result.invertedList.postings.get(rDoc);
           DocPosting iPosting = iResult.invertedList.postings.get(iDoc);
           DocPosting tmpPosting = new DocPosting(rPosting.docid);
+          // walk through position vector of both vectors to see if there are positions 
+          // satisfy the neighbor requirement 
           while (rPos < rPosting.tf && iPos < iPosting.tf) {
             if (rPosting.positions.get(rPos) + neighbor < iPosting.positions.get(iPos)) {
               rPos++;
@@ -43,6 +53,7 @@ public class QryopNear extends Qryop {
               rPos++;
             }
           }
+          // if theres is a match in both doc and position
           if (tmpPosting.tf != 0) {
             tempResult.invertedList.addPosting(tmpPosting);
           }
