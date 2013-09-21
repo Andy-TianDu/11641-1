@@ -6,6 +6,8 @@
 *.ear
 *.tar
 *.gz
+*.tgz
+*.zip
 
 # folders #
 hw2-index
