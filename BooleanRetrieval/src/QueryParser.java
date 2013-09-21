@@ -66,7 +66,7 @@ public class QueryParser {
 		    op = new QryopSyn();
 		} else if (opString.startsWith("NEAR/")) {
 		    String pairs[] = opString.split("/");
-		    int n = Integer.valueOf(pairs[1]);
+		    int n = Integer.valueOf(pairs[1].trim());
 		    op = new QryopNear(n);
 		} else {
 		    System.err.println("Syntax Error!");
@@ -115,7 +115,7 @@ public class QueryParser {
     }
 
     public static void main(String args[]) throws Exception {
-	String queryStr = "#AND(#OR(aa parsed) cc   #NEAR/3(dd ee))";
+	String queryStr = "#AND(#OR(aa parsed) cc   #NEAR/ 30 (dd ee ff))";
 	QueryParser parser = new QueryParser(queryStr, "UnrankedBoolean");
 	Qryop op = parser.parse();
 	System.out.println(op);
