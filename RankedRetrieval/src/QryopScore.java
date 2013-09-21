@@ -55,4 +55,10 @@ public class QryopScore extends Qryop {
 
     return result;
   }
+  
+  @Override
+  public OpType getType() {
+	return OpType.SCORE;
+  }
+
 }

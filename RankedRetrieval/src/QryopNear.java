@@ -18,7 +18,7 @@ public class QryopNear extends Qryop {
   public QryResult evaluate() throws IOException {
 
     QryResult result = args.get(0).evaluate();
-
+    String field = result.invertedList.field;
     // each pass evaluates one query operator
     for (int i = 1; i < args.size(); i++) {
       QryResult iResult = args.get(i).evaluate();
@@ -61,10 +61,16 @@ public class QryopNear extends Qryop {
           rDoc++;
         }
       }
-      result = tempResult;
+      result = tempResult; 
     }
-    QryopScore impliedOp = new QryopScore(this.algorithm);
-    return impliedOp.scoring(result);
+    result.invertedList.field = field;
+//    //TODO refactor, ranked boolean Score and other score method
+//    if (this.algorithm.equals(RetrievalAlgorithm.BM25)) {
+//	
+//    }
+//    QryopScore impliedOp = new QryopScore(this.algorithm);
+//    return impliedOp.scoring(result);
+    return result;
   }
 
   public String toString() {
@@ -87,6 +93,11 @@ public class QryopNear extends Qryop {
   @Override
   public boolean equals(Object obj) {
       return this.toString().equals(obj.toString());
+  }
+  
+  @Override
+  public OpType getType() {
+	return OpType.INV;
   }
   
 }

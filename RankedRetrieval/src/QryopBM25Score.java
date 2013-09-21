@@ -19,6 +19,15 @@ public class QryopBM25Score extends Qryop {
 	this.qtf = qtf;
     }
     
+    public QryopBM25Score(Qryop q, Parameter param, int qtf) {
+	this.args.add(q);
+	this.b = param.bm25_b;
+	this.k1 = param.bm25_k1;
+	this.k3 = param.bm25_k3;
+	this.qtf = qtf;
+    }
+    
+    
     public int getQtf() {
 	return qtf;
     }
@@ -55,10 +64,16 @@ public class QryopBM25Score extends Qryop {
     @Override
     public QryResult evaluate() throws IOException {
 	// TODO determine if it is score list
-	QryopTerm term = (QryopTerm) args.get(0);
-	QryResult result = term.evaluate();
-	String field = term.getField();
-	int N = QryEval.READER.getDocCount(field);
+	QryResult result = args.get(0).evaluate();
+	if(result.isScoreList())
+	    return result;
+	return scoring(result);
+		    
+    } 
+    
+    public QryResult scoring(QryResult result) throws IOException {
+	String field = result.invertedList.field;
+	int N = QryEval.READER.getDocCount(field); //TODO check this getNumDocs or getDocCount
 	int df = result.invertedList.df;
 	double idf = Math.log((N - df + 0.5) / (df + 0.5));
 	double user_weight = 1.0f * (k3 + 1) * qtf / (k3 + qtf);
@@ -72,6 +87,11 @@ public class QryopBM25Score extends Qryop {
 	    result.docScores.add(posting.docid, score);
 	}
 	return result;
-    } 
+    }
 
+    @Override
+    public OpType getType() {
+	return OpType.SCORE;
+    }
+    
 }

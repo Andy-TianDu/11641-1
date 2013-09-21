@@ -74,5 +74,10 @@ public class QryopOr extends Qryop {
     }
     return buf.toString();
   }
+  
+  @Override
+  public OpType getType() {
+	return OpType.SCORE;
+  }
 
 }

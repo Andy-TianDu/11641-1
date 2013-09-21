@@ -26,4 +26,7 @@ public abstract class Qryop {
   public void setRetrievalAlgorithm(RetrievalAlgorithm algo){
     algorithm = algo;
   }
+  
+  
+  public abstract OpType getType();
 }

@@ -52,4 +52,10 @@ public class QryopTerm extends Qryop {
     public int hashCode() {
 	return this.toString().hashCode();
     }
+    
+    @Override
+    public OpType getType() {
+  	return OpType.INV;
+    }
+
 }

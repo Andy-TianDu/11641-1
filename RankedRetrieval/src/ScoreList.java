@@ -29,6 +29,10 @@ public class ScoreList {
 		return -1;
 	    return docid - entry.docid;
 	}
+	
+	public void setScore(float score) {
+	    this.score = score;
+	}
     }
 
     List<ScoreListEntry> scores = new ArrayList<ScoreListEntry>();

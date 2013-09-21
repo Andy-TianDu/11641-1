@@ -2,43 +2,15 @@ import java.io.IOException;
 import java.util.HashMap;
 
 public class QryopBM25SUM extends Qryop {
-    private float k1;
-    private float b;
-    private float k3;
-
+    private Parameter param;
+    
     public QryopBM25SUM(Parameter param) {
-	k1 = param.bm25_k1;
-	b = param.bm25_b;
-	k3 = param.bm25_k3;
-    }
-
-    public float getK1() {
-	return k1;
-    }
-
-    public void setK1(float k1) {
-	this.k1 = k1;
-    }
-
-    public float getB() {
-	return b;
-    }
-
-    public void setB(float b) {
-	this.b = b;
-    }
-
-    public float getK3() {
-	return k3;
-    }
-
-    public void setK3(float k3) {
-	this.k3 = k3;
+	this.param = param;
     }
 
     @Override
     public QryResult evaluate() throws IOException {
-	// TODO Auto-generated method stub
+	// calculate qtf
 	HashMap<Qryop, Integer> terms = new HashMap<Qryop, Integer>();
 
 	for (Qryop arg : args) {
@@ -49,7 +21,7 @@ public class QryopBM25SUM extends Qryop {
 	}
 	QryResult iResult = new QryResult();
 	for (Qryop term : terms.keySet()) {
-	    QryopBM25Score impliedOp = new QryopBM25Score(term, k1, b, k3,
+	    QryopBM25Score impliedOp = new QryopBM25Score(term, param,
 		    terms.get(term));
 	    QryResult result = impliedOp.evaluate();
 	    int iDoc, rDoc;
@@ -98,6 +70,11 @@ public class QryopBM25SUM extends Qryop {
 	    buf.append(i == args.size() - 1 ? ")" : " ");
 	}
 	return buf.toString();
+    }
+
+    @Override
+    public OpType getType() {
+	return OpType.SCORE;
     }
 
 }

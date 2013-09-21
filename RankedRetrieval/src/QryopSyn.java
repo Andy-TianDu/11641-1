@@ -30,4 +30,9 @@ public class QryopSyn extends Qryop {
 
     return result;
   }
+  
+  @Override
+  public OpType getType() {
+	return OpType.INV;
+  }
 }
