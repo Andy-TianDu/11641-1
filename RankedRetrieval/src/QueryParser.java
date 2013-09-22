@@ -74,21 +74,25 @@ public class QueryParser {
 		Qryop op = null;
 		String opString = queryString.substring(opStartIndex,
 			opEndIndex).trim();
-		if (opString.equals("AND")) {
+		if (opString.equalsIgnoreCase("AND")) {
 		    op = new QryopAnd();
-		} else if (opString.equals("OR")) {
+		} else if (opString.equalsIgnoreCase("OR")) {
 		    op = new QryopOr();
-		} else if (opString.equals("SYN")) {
+		} else if (opString.equalsIgnoreCase("SYN")) {
 		    op = new QryopSyn();
 		} else if (opString.startsWith("NEAR/")) {
 		    String pairs[] = opString.split("/");
 		    int n = Integer.valueOf(pairs[1].trim());
 		    op = new QryopNear(n);
-		} else if (opString.startsWith("SUM")) {
+		} else if (opString.startsWith("UW/")) {
+		    String pairs[] = opString.split("/");
+		    int w = Integer.valueOf(pairs[1].trim());
+		    op = new QryopWindow(w);
+		} else if (opString.equalsIgnoreCase("SUM")) {
 		    op = new QryopBM25SUM(param);
-		} else if (opString.startsWith("COMBINE")) {
+		} else if (opString.equalsIgnoreCase("COMBINE")) {
 		    op = new QryopIndriAnd(param);
-		} else if (opString.startsWith("WEIGHT")) {
+		} else if (opString.equalsIgnoreCase("WEIGHT")) {
 		    op = new QryopIndriWeight(param);
 		} else {
 		    System.err.println("Syntax Error!");
@@ -134,11 +138,13 @@ public class QueryParser {
 		    System.err.println("Stntax Error!");
 		    System.exit(1);
 		}
-		
+
 		if (cur >= '0' && cur <= '9'
 			&& crtOp.getType() == OpType.WEIGHT) {// might be weight
 		    QryopIndriWeight weightOp = (QryopIndriWeight) crtOp;
-		    if (weightOp.getNumOperands() == weightOp.getNumWeights()) { // it's a weight			
+		    if (weightOp.getNumOperands() == weightOp.getNumWeights()) { // it's
+										 // a
+										 // weight
 			String weightString = queryString.substring(i, wordEnd);
 			float weight = Float.valueOf(weightString);
 			weightOp.addWeight(weight);
@@ -146,7 +152,7 @@ public class QueryParser {
 			continue;
 		    }
 		}
-		
+
 		String termString = queryString.substring(i, wordEnd);
 		String[] strArr = termString.split("\\.");
 		Qryop termQuery;
@@ -170,8 +176,7 @@ public class QueryParser {
 
     public static void main(String args[]) throws Exception {
 	String queryStr = "#WEIGHT(0.1 #NEAR/1(aa bb) 0.7 cc)";
-	QueryParser parser = new QueryParser(queryStr, "Indri",
-		new Parameter());
+	QueryParser parser = new QueryParser(queryStr, "Indri", new Parameter());
 	Qryop op = parser.parse();
 	System.out.println(op);
     }

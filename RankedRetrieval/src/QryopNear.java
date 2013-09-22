@@ -64,12 +64,6 @@ public class QryopNear extends Qryop {
       result = tempResult; 
     }
     result.invertedList.field = field;
-//    //TODO refactor, ranked boolean Score and other score method
-//    if (this.algorithm.equals(RetrievalAlgorithm.BM25)) {
-//	
-//    }
-//    QryopScore impliedOp = new QryopScore(this.algorithm);
-//    return impliedOp.scoring(result);
     return result;
   }
 
