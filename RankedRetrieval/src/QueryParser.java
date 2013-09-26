@@ -101,14 +101,30 @@ public class QueryParser {
 		if (crtOp != null) {
 		    crtOp.addQryop(op);
 		    qryStack.push(crtOp);
+		} else { // first operator
+		    if (op.getType() == OpType.INV) {
+			switch (algorithm) {
+			case BM25:
+			    crtOp = new QryopBM25SUM(param);
+			    break;
+			case Indri:
+			    crtOp = new QryopIndriAnd(param);
+			    break;
+			default:
+			    crtOp = new QryopOr();
+			}
+			crtOp.setRetrievalAlgorithm(algorithm);
+			crtOp.addQryop(op);
+			qryStack.push(crtOp);
+		    }
 		}
 		crtOp = op;
 		i = opEndIndex + 1; // right after '('
 	    } else if (cur == ')') { // end of query operator
 		if (i != queryString.length() - 1)
 		    crtOp = qryStack.pop();
-		else {
-		    if (crtOp.getType() == OpType.INV) {
+		else { // NEAR, WINDOW in the outer layer
+		    if (crtOp.getType() == OpType.INV && qryStack.isEmpty()) {
 			Qryop op = null;
 			switch (algorithm) {
 			case BM25:
@@ -169,12 +185,15 @@ public class QueryParser {
 		i = wordEnd;
 	    }
 	}
+	if(!qryStack.isEmpty()) {
+	    crtOp = qryStack.pop();
+	}
 	System.out.println(crtOp);
 	return crtOp;
     }
 
     public static void main(String args[]) throws Exception {
-	String queryStr = "#WEIGHT(0.1 #NEAR/1(aa bb) 0.7 cc)";
+	String queryStr = "#NEAR/1(obama family tree)";
 	QueryParser parser = new QueryParser(queryStr, "Indri", new Parameter());
 	Qryop op = parser.parse();
 	System.out.println(op);
