@@ -10,6 +10,6 @@ public class QryResult {
   InvList invertedList = new InvList();
 
   public boolean isScoreList() {
-    return docScores.getScoreListLength() > 0 || invertedList.postings.size() == 0;
+    return docScores.getScoreListLength() > 0;
   }
 }

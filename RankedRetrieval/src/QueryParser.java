@@ -24,7 +24,6 @@ public class QueryParser {
 	    algorithm = RetrievalAlgorithm.Indri;
 	}
 	this.param = param;
-
     }
 
     /**
@@ -116,7 +115,7 @@ public class QueryParser {
 			    op = new QryopBM25SUM(param);
 			    break;
 			case Indri:
-			    // TODO
+			    op = new QryopIndriAnd(param);
 			    break;
 			default:
 			    op = new QryopOr();

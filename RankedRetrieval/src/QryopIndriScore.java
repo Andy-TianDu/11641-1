@@ -35,8 +35,7 @@ public class QryopIndriScore extends Qryop {
 	float smoothingTerm;
 	if (smoothing.equals("df")) {
 	    smoothingTerm = 1.0f * df / N;
-	}
-	else {
+	} else {
 	    smoothingTerm = 1.0f * ctf / length_c;
 	}
 	for (int i = 0; i < QryEval.READER.numDocs(); i++) {
@@ -54,10 +53,10 @@ public class QryopIndriScore extends Qryop {
 		    continue;
 		}
 	    }
-	    
+
 	    long length_d = QryEval.dls.getDocLength(field, i);
-	    float score = lambda * (mu * smoothingTerm)
-		    / (length_d + mu) + (1 - lambda) * smoothingTerm;
+	    float score = lambda * (mu * smoothingTerm) / (length_d + mu)
+		    + (1 - lambda) * smoothingTerm;
 	    score = (float) Math.log(score);
 	    result.docScores.add(i, score);
 	}

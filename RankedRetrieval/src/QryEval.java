@@ -111,6 +111,7 @@ public class QryEval {
 	param.bm25_k3 = Float.valueOf(params.get("BM25:k_3"));
 	param.indri_lambda = Float.valueOf(params.get("Indri:lambda"));
 	param.indri_mu = Integer.valueOf(params.get("Indri:mu"));
+	param.indri_smoothing = params.get("Indri:smoothing");
 	// parse and evaluate each queries
 	for (int queryId : queries.keySet()) {
 	    String queryString = queries.get(queryId);
