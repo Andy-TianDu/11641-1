@@ -1,5 +1,11 @@
 import java.io.IOException;
 
+/**
+ * This class scores a result with inverted list according to Indri model
+ * 
+ * @author Siping Ji <sipingji@cmu.edu>
+ * 
+ */
 public class QryopIndriScore extends Qryop {
 
     private int mu;
@@ -23,6 +29,13 @@ public class QryopIndriScore extends Qryop {
 
     }
 
+    /**
+     * compute score according to Indri model using two-stage smoothing
+     * 
+     * @param result
+     * @return
+     * @throws IOException
+     */
     public QryResult scoring(QryResult result) throws IOException {
 
 	String field = result.invertedList.field;
@@ -55,8 +68,15 @@ public class QryopIndriScore extends Qryop {
 	    }
 
 	    long length_d = QryEval.dls.getDocLength(field, i);
+
 	    float score = lambda * (mu * smoothingTerm) / (length_d + mu)
 		    + (1 - lambda) * smoothingTerm;
+	    // when ctf, tf == 0(NEAR), smoothing term = 0, score = 0,
+	    // log(score) = -inf
+	    // this is problemetic, so in this situation, I choose to assign
+	    // score = min float value
+	    if (score == 0)
+		score = Float.MIN_VALUE;
 	    score = (float) Math.log(score);
 	    result.docScores.add(i, score);
 	}
