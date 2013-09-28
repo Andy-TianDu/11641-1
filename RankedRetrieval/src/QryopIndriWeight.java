@@ -1,11 +1,18 @@
 import java.io.IOException;
 import java.util.ArrayList;
 
+/**
+ * This class defines the behavior of indri weight operator
+ * 
+ * @author Siping Ji <sipingji@cmu.edu>
+ * 
+ */
 public class QryopIndriWeight extends Qryop {
 
     private Parameter param;
     private ArrayList<Float> weights = new ArrayList<Float>();
     private float totalWeight = 0;
+
     public QryopIndriWeight(Parameter param) {
 	this.param = param;
     }
@@ -22,9 +29,14 @@ public class QryopIndriWeight extends Qryop {
 	weights.add(weight);
 	totalWeight += weight;
     }
-    
+
     @Override
-    public QryResult evaluate() throws IOException {	
+    /*
+     * (non-Javadoc)
+     * 
+     * @see Qryop#evaluate()
+     */
+    public QryResult evaluate() throws IOException {
 	QryopIndriScore impliedOp = new QryopIndriScore(args.get(0), param);
 	QryResult result = impliedOp.evaluate();
 	for (int i = 0; i < QryEval.READER.numDocs(); i++) {
@@ -35,10 +47,12 @@ public class QryopIndriWeight extends Qryop {
 	for (int i = 1; i < args.size(); i++) {
 	    impliedOp = new QryopIndriScore(args.get(i), param);
 	    QryResult iResult = impliedOp.evaluate();
+	    // simply compute the weighted sum
 	    for (int j = 0; j < QryEval.READER.numDocs(); j++) {
 		float rScore = result.docScores.getDocidScore(j);
 		float iScore = iResult.docScores.getDocidScore(j);
-		result.docScores.setScore(j, rScore + iScore * weights.get(i) / totalWeight);
+		result.docScores.setScore(j, rScore + iScore * weights.get(i)
+			/ totalWeight);
 	    }
 	}
 	return result;

@@ -27,6 +27,12 @@ public abstract class Qryop {
     algorithm = algo;
   }
   
-  
+  /**
+   * get return type of the operator
+   * @return 
+   * 	OpType.SCORE if the query operator returns a score list
+   * 	OpType.INV if the query operator returns a inverted list
+   * 	OpType.WEIGHT if the query operator is an Indri operator
+   */
   public abstract OpType getType();
 }

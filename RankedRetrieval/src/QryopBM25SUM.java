@@ -1,9 +1,15 @@
 import java.io.IOException;
 import java.util.HashMap;
 
+/**
+ * This class defines the behavior of BM25 SUM operator
+ * 
+ * @author Siping Ji <sipingji@cmu.edu>
+ * 
+ */
 public class QryopBM25SUM extends Qryop {
     private Parameter param;
-    
+
     public QryopBM25SUM(Parameter param) {
 	this.param = param;
     }
@@ -11,6 +17,13 @@ public class QryopBM25SUM extends Qryop {
     @Override
     public QryResult evaluate() throws IOException {
 	// calculate qtf
+	// duplicate query term will be evaluate only once with qtf > 1
+	// in this implementation, near/window operator will also be
+	// considered to be potentially duplicated if two ops contain the same
+	// terms, for example NEAR/1(a b) and NEAR/1(a b) will only be evaluated
+	// once with qtf = 2
+	// this is implemented by override the hashcode and equals method of
+	// QryOpWindow and QryopNear
 	HashMap<Qryop, Integer> terms = new HashMap<Qryop, Integer>();
 
 	for (Qryop arg : args) {
@@ -20,6 +33,9 @@ public class QryopBM25SUM extends Qryop {
 		terms.put(arg, terms.get(arg) + 1);
 	}
 	QryResult iResult = new QryResult();
+	
+	// for each term or sub-operator, compute their score
+	// and aggregate them to get the whole score
 	for (Qryop term : terms.keySet()) {
 	    QryopBM25Score impliedOp = new QryopBM25Score(term, param,
 		    terms.get(term));

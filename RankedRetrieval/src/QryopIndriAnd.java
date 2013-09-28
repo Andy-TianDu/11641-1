@@ -1,5 +1,11 @@
 import java.io.IOException;
 
+/**
+ * This class defines the behavior of the indri combine operator
+ * 
+ * @author Siping Ji <sipingji@cmu.edu>
+ * 
+ */
 public class QryopIndriAnd extends Qryop {
 
     private Parameter param;
@@ -9,11 +15,17 @@ public class QryopIndriAnd extends Qryop {
     }
 
     @Override
+    /*
+     * (non-Javadoc)
+     * 
+     * @see Qryop#evaluate()
+     */
     public QryResult evaluate() throws IOException {
 	float weight = 1.0f / args.size(); // even weight
 
 	QryopIndriScore impliedOp = new QryopIndriScore(args.get(0), param);
 	QryResult result = impliedOp.evaluate();
+
 	for (int i = 0; i < QryEval.READER.numDocs(); i++) {
 	    float score = result.docScores.getDocidScore(i);
 	    result.docScores.setScore(i, score * weight);
@@ -22,6 +34,8 @@ public class QryopIndriAnd extends Qryop {
 	for (int i = 1; i < args.size(); i++) {
 	    impliedOp = new QryopIndriScore(args.get(i), param);
 	    QryResult iResult = impliedOp.evaluate();
+	    // simply aggregate the scores of for each score list
+	    // the average and compute
 	    for (int j = 0; j < QryEval.READER.numDocs(); j++) {
 		float rScore = result.docScores.getDocidScore(j);
 		float iScore = iResult.docScores.getDocidScore(j);

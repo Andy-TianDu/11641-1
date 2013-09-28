@@ -59,7 +59,7 @@ public class QryEval {
      * @throws Exception
      */
     public static void main(String[] args) throws Exception {
-//	long startTime = System.currentTimeMillis();
+	long startTime = System.currentTimeMillis();
 	// must supply parameter file
 	if (args.length < 1) {
 	    System.err.println(usage);
@@ -115,15 +115,15 @@ public class QryEval {
 	// parse and evaluate each queries
 	for (int queryId : queries.keySet()) {
 	    String queryString = queries.get(queryId);
-	    QueryParser parser = new QueryParser(queryString,
+	    QueryParser parser = new QueryParser(queryString.trim(),
 		    params.get("retrievalAlgorithm"), param);
 	    Qryop query = parser.parse();
 	    QryResult result = query.evaluate();
 	    result.docScores.sort();
 	    printResults(queryId, result, out);
 	}
-//	long endTime = System.currentTimeMillis();
-//	System.out.println(endTime - startTime);
+	long endTime = System.currentTimeMillis();
+	System.out.println(endTime - startTime);
     }
 
     /**
@@ -161,6 +161,10 @@ public class QryEval {
      */
     static void printResults(int queryId, QryResult result, PrintStream out)
 	    throws IOException {
+	if (result.docScores.scores.size() == 0) {
+	    out.printf("%d\tQ0\tdummy\t1\t0\trun-1\n", queryId);
+	    return;
+	}
 	for (int i = 0; i < result.docScores.scores.size() && i < 100; i++) {
 	    out.printf("%d\tQ0\t%s\t%d\t%f\trun-1\n", queryId,
 		    getExternalDocid(result.docScores.getDocid(i)), i + 1,

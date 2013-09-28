@@ -62,7 +62,7 @@ public class QueryParser {
 
 	while (i < queryString.length()) {
 	    cur = queryString.charAt(i);
-	    if (cur == ' ' || cur == '\t') {
+	    if (cur == ' ' || cur == '\t' || cur == '\r' || cur == '\n') {
 		i++;
 		continue;
 	    }
@@ -157,9 +157,8 @@ public class QueryParser {
 		if (cur >= '0' && cur <= '9'
 			&& crtOp.getType() == OpType.WEIGHT) {// might be weight
 		    QryopIndriWeight weightOp = (QryopIndriWeight) crtOp;
-		    if (weightOp.getNumOperands() == weightOp.getNumWeights()) { // it's
-										 // a
-										 // weight
+		    if (weightOp.getNumOperands() == weightOp.getNumWeights()) {
+			//the number is a weight but not a term
 			String weightString = queryString.substring(i, wordEnd);
 			float weight = Float.valueOf(weightString);
 			weightOp.addWeight(weight);
@@ -185,7 +184,7 @@ public class QueryParser {
 		i = wordEnd;
 	    }
 	}
-	if(!qryStack.isEmpty()) {
+	if (!qryStack.isEmpty()) {
 	    crtOp = qryStack.pop();
 	}
 	System.out.println(crtOp);
@@ -193,9 +192,8 @@ public class QueryParser {
     }
 
     public static void main(String args[]) throws Exception {
-	String queryStr = "#NEAR/1(obama family tree)";
+	String queryStr = "#COMBINE( #NEAR/1( charleston sc )  #NEAR/1( yorktown charleston )  #NEAR/1( uss yorktown ) )";
 	QueryParser parser = new QueryParser(queryStr, "Indri", new Parameter());
 	Qryop op = parser.parse();
-	System.out.println(op);
     }
 }
