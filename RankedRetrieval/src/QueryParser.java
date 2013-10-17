@@ -74,7 +74,11 @@ public class QueryParser {
 		String opString = queryString.substring(opStartIndex,
 			opEndIndex).trim();
 		if (opString.equalsIgnoreCase("AND")) {
-		    op = new QryopAnd();
+		    if (algorithm == RetrievalAlgorithm.Indri) {
+			op = new QryopIndriAnd(param);
+		    } else {
+			op = new QryopAnd();
+		    }
 		} else if (opString.equalsIgnoreCase("OR")) {
 		    op = new QryopOr();
 		} else if (opString.equalsIgnoreCase("SYN")) {
@@ -158,7 +162,7 @@ public class QueryParser {
 			&& crtOp.getType() == OpType.WEIGHT) {// might be weight
 		    QryopIndriWeight weightOp = (QryopIndriWeight) crtOp;
 		    if (weightOp.getNumOperands() == weightOp.getNumWeights()) {
-			//the number is a weight but not a term
+			// the number is a weight but not a term
 			String weightString = queryString.substring(i, wordEnd);
 			float weight = Float.valueOf(weightString);
 			weightOp.addWeight(weight);
@@ -187,7 +191,7 @@ public class QueryParser {
 	if (!qryStack.isEmpty()) {
 	    crtOp = qryStack.pop();
 	}
-	System.out.println(crtOp);
+//	System.out.println(crtOp);
 	return crtOp;
     }
 

@@ -45,12 +45,19 @@ public class QryopIndriScore extends Qryop {
 	int j = 0;
 	int df = result.invertedList.df;
 	int N = QryEval.READER.numDocs();
+	float avg_doclen = 1.0f * QryEval.READER.getSumTotalTermFreq(field) / N;
+	
 	float smoothingTerm;
 	if (smoothing.equals("df")) {
 	    smoothingTerm = 1.0f * df / N;
 	} else {
 	    smoothingTerm = 1.0f * ctf / length_c;
 	}
+	float default_score = lambda * (mu * smoothingTerm) / (avg_doclen + mu)
+		    + (1 - lambda) * smoothingTerm;
+	if (default_score == 0)
+	    default_score = Float.MIN_VALUE;
+	default_score = (float) Math.log(default_score);
 	for (int i = 0; i < QryEval.READER.numDocs(); i++) {
 	    if (j < df) {
 		DocPosting posting = result.invertedList.postings.get(j);
@@ -67,18 +74,18 @@ public class QryopIndriScore extends Qryop {
 		}
 	    }
 
-	    long length_d = QryEval.dls.getDocLength(field, i);
+//	    long length_d = QryEval.dls.getDocLength(field, i);
 
-	    float score = lambda * (mu * smoothingTerm) / (length_d + mu)
-		    + (1 - lambda) * smoothingTerm;
-	    // when ctf, tf == 0(NEAR), smoothing term = 0, score = 0,
+//	    float score = lambda * (mu * smoothingTerm) / (avg_doclen + mu)
+//		    + (1 - lambda) * smoothingTerm;
+//	    // when ctf, tf == 0(NEAR), smoothing term = 0, score = 0,
 	    // log(score) = -inf
 	    // this is problemetic, so in this situation, I choose to assign
 	    // score = min float value
-	    if (score == 0)
-		score = Float.MIN_VALUE;
-	    score = (float) Math.log(score);
-	    result.docScores.add(i, score);
+//	    if (default_score == 0)
+//		default_score = Float.MIN_VALUE;
+//	    score = (float) Math.log(score);
+	    result.docScores.add(i, default_score);
 	}
 	return result;
     }

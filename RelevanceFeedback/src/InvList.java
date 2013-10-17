@@ -107,7 +107,7 @@ public class InvList {
 
     public void addPosting(DocPosting posting) {
 	postings.add(posting);
-	ctf += postings.size();
+	ctf += posting.tf;
 	df++;
     }
 

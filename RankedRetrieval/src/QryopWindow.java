@@ -85,7 +85,7 @@ public class QryopWindow extends Qryop {
 
 		    // if max pos - min pos <= window_size, add to result
 		    // else increase the indices with min pos
-		    if (maxPos - minPos <= window) {
+		    if (maxPos - minPos < window) {
 			tmpPosting.addPosition(maxPos);
 			for (int i = 0; i < args.size(); i++)
 			    posIndices[i]++;

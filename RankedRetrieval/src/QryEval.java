@@ -106,24 +106,34 @@ public class QryEval {
 
 	PrintStream out =  new PrintStream(new File(oFile));
 	Parameter param = new Parameter();
-	param.bm25_k1 = Float.valueOf(params.get("BM25:k_1"));
-	param.bm25_b = Float.valueOf(params.get("BM25:b"));
-	param.bm25_k3 = Float.valueOf(params.get("BM25:k_3"));
-	param.indri_lambda = Float.valueOf(params.get("Indri:lambda"));
-	param.indri_mu = Integer.valueOf(params.get("Indri:mu"));
-	param.indri_smoothing = params.get("Indri:smoothing");
+	try {
+	    param.bm25_k1 = Float.valueOf(params.get("BM25:k_1"));
+	    param.bm25_b = Float.valueOf(params.get("BM25:b"));
+	    param.bm25_k3 = Float.valueOf(params.get("BM25:k_3"));
+
+	} catch (Exception e) {
+	    // do nothing
+	}
+	try {
+	    param.indri_lambda = Float.valueOf(params.get("Indri:lambda"));
+	    param.indri_mu = Integer.valueOf(params.get("Indri:mu"));
+	    param.indri_smoothing = params.get("Indri:smoothing");
+	} catch (Exception e) {
+	    // do nothing
+	}
 	// parse and evaluate each queries
 	for (int queryId : queries.keySet()) {
 	    String queryString = queries.get(queryId);
 	    QueryParser parser = new QueryParser(queryString.trim(),
 		    params.get("retrievalAlgorithm"), param);
 	    Qryop query = parser.parse();
+//	    System.out.println(query);
 	    QryResult result = query.evaluate();
 	    result.docScores.sort();
 	    printResults(queryId, result, out);
 	}
 	long endTime = System.currentTimeMillis();
-	System.out.println(endTime - startTime);
+//	System.out.println(endTime - startTime);
     }
 
     /**
