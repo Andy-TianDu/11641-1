@@ -5,5 +5,5 @@
  *
  */
 public enum OpType {
-    INV, SCORE, WEIGHT
+    INV, SCORE, WEIGHT, RF
 }

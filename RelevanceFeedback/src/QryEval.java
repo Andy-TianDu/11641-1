@@ -10,6 +10,7 @@
  */
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.StringReader;
@@ -18,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.TreeMap;
 
 import org.apache.lucene.analysis.Analyzer.TokenStreamComponents;
 import org.apache.lucene.analysis.TokenStream;
@@ -94,7 +96,7 @@ public class QryEval {
 	dls = new DocLengthStore(READER);
 
 	// read queries and store the query id - query string pair in hashmap
-	HashMap<Integer, String> queries = new HashMap<Integer, String>();
+	Map<Integer, String> queries = new TreeMap<Integer, String>();
 	scan = new Scanner(new File(params.get("queryFilePath")));
 	while (scan.hasNextLine()) {
 	    line = scan.nextLine();
@@ -104,7 +106,7 @@ public class QryEval {
 	    queries.put(queryId, queryString);
 	}
 
-	PrintStream out =  new PrintStream(new File(oFile));
+	PrintStream out = new PrintStream(new File(oFile));
 	Parameter param = new Parameter();
 	try {
 	    param.bm25_k1 = Float.valueOf(params.get("BM25:k_1"));
@@ -121,12 +123,31 @@ public class QryEval {
 	} catch (Exception e) {
 	    // do nothing
 	}
+
+	try {
+	    param.fb = Boolean.valueOf(params.get("fb"));
+	    param.fb_numDocs = Integer.valueOf(params.get("fbDocs"));
+	    param.fb_numTerms = Integer.valueOf(params.get("fbTerms"));
+	    param.fb_mu = Integer.valueOf(params.get("fbMu"));
+	    param.fb_originalWeight = Float.valueOf(params.get("fbOrigWeight"));
+	    param.fb_file = params.get("fbFile");
+	} catch (Exception e) {
+	    // TODO: handle exception
+	}
 	// parse and evaluate each queries
 	for (int queryId : queries.keySet()) {
 	    String queryString = queries.get(queryId);
 	    QueryParser parser = new QueryParser(queryString.trim(),
 		    params.get("retrievalAlgorithm"), param);
 	    Qryop query = parser.parse();
+
+	    // expand query if using relevance feedback
+	    if (param.fb) {
+		RelevanceFeedback rf = new RelevanceFeedback(queryId, query,
+			param);
+		query = rf.evaluate();
+	    }
+	    printExpandedQuery(queryId, query, param.fb_file);
 	    QryResult result = query.evaluate();
 	    result.docScores.sort();
 	    printResults(queryId, result, out);
@@ -178,6 +199,25 @@ public class QryEval {
 	    out.printf("%d\tQ0\t%s\t%d\t%f\trun-1\n", queryId,
 		    getExternalDocid(result.docScores.getDocid(i)), i + 1,
 		    result.docScores.getDocidScore(i));
+	}
+    }
+
+    /**
+     * printExpandedQuery - output the expanded query
+     * 
+     * @param queryId
+     * @param query
+     *            - expanded query
+     */
+    static void printExpandedQuery(int queryId, Qryop query, String fb_out) {
+	try {
+	    @SuppressWarnings("resource")
+	    PrintStream out = new PrintStream(new File(fb_out));
+	    out = System.out;
+	    out.printf("%d: %s\n", queryId, query);
+	} catch (FileNotFoundException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
 	}
     }
 

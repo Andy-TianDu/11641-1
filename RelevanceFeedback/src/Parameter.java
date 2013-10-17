@@ -11,6 +11,12 @@ public class Parameter {
     public int indri_mu;
     public float indri_lambda;
     public String indri_smoothing;
+    public int fb_numDocs;
+    public int fb_numTerms;
+    public int fb_mu;
+    public float fb_originalWeight;
+    public boolean fb;
+    public String fb_file;
     
     public Parameter() {}
 }

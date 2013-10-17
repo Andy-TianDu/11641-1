@@ -40,22 +40,26 @@ public class QryopTerm extends Qryop {
     }
 
     public String toString() {
+	return term;
+    }
+
+    public String toFullString() {
 	return term + "." + field;
     }
 
     @Override
     public boolean equals(Object obj) {
-	return this.toString().equals(obj.toString());
+	return this.toFullString().equals(((QryopTerm) obj).toFullString());
     }
-    
+
     @Override
     public int hashCode() {
-	return this.toString().hashCode();
+	return this.toFullString().hashCode();
     }
-    
+
     @Override
     public OpType getType() {
-  	return OpType.INV;
+	return OpType.INV;
     }
 
 }
