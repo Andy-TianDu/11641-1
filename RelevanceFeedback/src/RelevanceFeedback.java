@@ -111,6 +111,19 @@ public class RelevanceFeedback {
 	    qe.addQryop(new QryopTerm(entry.getKey()));
 	    qe.addWeight(entry.getValue());
 	}
+	
+	// if tie
+	float epsilon = 1e-20f;
+	for (int i = numTerms; i < sortedTerm.size(); i++) {
+	    Entry<String, Float> entry = sortedTerm.get(i);
+	    if (Math.abs(entry.getValue() - sortedTerm.get(numTerms - 1).getValue()) < epsilon) {
+		qe.addQryop(new QryopTerm(entry.getKey()));
+		qe.addWeight(entry.getValue());
+	    }
+	    else {
+		break;
+	    }
+	}
 	QryopIndriWeight qExpand = new QryopIndriWeight(param);
 	qExpand.addQryop(originalQuery);
 	qExpand.addWeight(originalWeight);
