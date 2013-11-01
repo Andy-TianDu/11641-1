@@ -8,6 +8,30 @@ import java.util.Scanner;
 public class Utils {
 
     /**
+     * preprocess user ratings
+     * @param userHashtable
+     */
+    public static void preprocessUsers(HashMap<Integer, User> userHashtable, Boolean normalization) {
+	/* preprocess data */
+	for (int key : userHashtable.keySet()) {
+	    User user = userHashtable.get(key);
+	    user.preprocess(normalization);
+	}
+    }
+
+    /**
+     * preprocess movie ratings
+     * @param movieHashTable
+     */
+    public static void preprocessMovies(HashMap<Integer, Movie> movieHashTable, Boolean normalization) {
+	for (int key : movieHashTable.keySet()) {
+	    Movie movie = movieHashTable.get(key);
+	    movie.preprocess(normalization);
+	}
+    }
+    
+
+    /**
      * read training data and populate rating into the utility matrix where
      * users are the rows and movies are columns
      * 
@@ -36,14 +60,7 @@ public class Utils {
 	    }
 	    user.addMovieRating(movieId, rating);
 	}
-
-	/* preprocess data */
-	for (int key : userHashtable.keySet()) {
-	    User user = userHashtable.get(key);
-	    user.preprocess();
-	    user.initialize();
-	}
-
+	scanner.close();
 	return userHashtable;
     }
 
@@ -71,19 +88,28 @@ public class Utils {
 	    if (movieHashTable.containsKey(movieId)) {
 		movie = movieHashTable.get(movieId);
 	    } else {
-		movie = new Movie(userId);
+		movie = new Movie(movieId);
 		movieHashTable.put(movieId, movie);
 	    }
 	    movie.addUserRating(userId, rating);
 	}
-
-	for (int key : movieHashTable.keySet()) {
-	    Movie movie = movieHashTable.get(key);
-	    movie.preprocess();
-	    movie.initialize();
-	}
-
+	scanner.close();
 	return movieHashTable;
+    }
+    
+    public static List<Query> readQueries(String queryFile) throws FileNotFoundException {
+	List<Query> queries = new ArrayList<Query>();
+	Scanner scanner = new Scanner(new File(queryFile));
+	String line;
+	line = scanner.nextLine();
+	while (scanner.hasNext()) {
+	    line = scanner.nextLine();
+	    String token[] = line.split(",");
+	    int movieId = Integer.parseInt(token[0]);
+	    int userId = Integer.parseInt(token[1]);
+	    queries.add(new Query(userId, movieId));
+	}
+	return queries;
     }
 
     /**
@@ -140,4 +166,26 @@ public class Utils {
 
 	return (float) Math.sqrt(length);
     }
+    
+    public static float computeEuclidianDistance(HashMap<Integer, Float> v1, HashMap<Integer, Float> v2) {
+	int count = 0;
+	float distance = 0f;
+	for (int key : v1.keySet()) {
+	    if (v2.containsKey(key)) {
+		distance += (v2.get(key) - v1.get(key)) * (v2.get(key) - v1.get(key));
+	    }
+	    else {
+		distance += v1.get(key) * v1.get(key);
+	    }
+	    count++;
+	}
+	for (int key : v2.keySet()) {
+	    if (!v1.containsKey(key)) {
+		distance += v2.get(key) * v2.get(key);
+		count++;
+	    }
+	}
+	return distance;
+    }
+    
 }
