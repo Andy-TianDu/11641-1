@@ -57,7 +57,7 @@ public class Movie {
 	    }
 	    float totalSim = 0;
 	    for (Neighbor sim : neighbors) {
-//		System.out.printf("%f ", sim.simScore);
+//		System.out.printf("%d %f ", sim.id, sim.simScore);
 		sim.simScore = (sim.simScore + 1) / 2; // rescale to 0...1
 		totalSim += sim.simScore;
 	    }
