@@ -10,7 +10,6 @@
  */
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.StringReader;
@@ -106,7 +105,7 @@ public class QryEval {
 	    queries.put(queryId, queryString);
 	}
 
-	PrintStream out = new PrintStream(new File(oFile));
+	PrintStream out = System.out;// new PrintStream(new File(oFile));
 	Parameter param = new Parameter();
 	try {
 	    param.bm25_k1 = Float.valueOf(params.get("BM25:k_1"));
@@ -135,6 +134,10 @@ public class QryEval {
 	    // TODO: handle exception
 	}
 	// parse and evaluate each queries
+	PrintStream rfOut = null;
+	if (param.fb_file != null)
+	    rfOut = new PrintStream(param.fb_file);
+
 	for (int queryId : queries.keySet()) {
 	    String queryString = queries.get(queryId);
 	    QueryParser parser = new QueryParser(queryString.trim(),
@@ -146,14 +149,17 @@ public class QryEval {
 		RelevanceFeedback rf = new RelevanceFeedback(queryId, query,
 			param);
 		query = rf.evaluate();
+
+		if (param.fb_file != null)
+		    printExpandedQuery(queryId, query, rfOut);
 	    }
-	    printExpandedQuery(queryId, query, param.fb_file);
+
 	    QryResult result = query.evaluate();
 	    result.docScores.sort();
 	    printResults(queryId, result, out);
 	}
 	long endTime = System.currentTimeMillis();
-	System.out.println(endTime - startTime);
+	// System.out.println(endTime - startTime);
     }
 
     /**
@@ -209,16 +215,9 @@ public class QryEval {
      * @param query
      *            - expanded query
      */
-    static void printExpandedQuery(int queryId, Qryop query, String fb_out) {
-	try {
-	    @SuppressWarnings("resource")
-	    PrintStream out = new PrintStream(new File(fb_out));
-	    out = System.out;
-	    out.printf("%d: %s\n", queryId, query);
-	} catch (FileNotFoundException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	}
+    static void printExpandedQuery(int queryId, Qryop query, PrintStream out) {
+	// out = System.out;
+	out.printf("%d: %s\n", queryId, query);
     }
 
     /**

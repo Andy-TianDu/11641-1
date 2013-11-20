@@ -1,0 +1,3 @@
+train=data/citeseer.train.ltc.svm
+test=data/citeseer.test.ltc.svm
+c=0.0001

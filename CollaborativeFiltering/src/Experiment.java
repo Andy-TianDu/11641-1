@@ -46,8 +46,8 @@ public class Experiment {
 	System.out.printf("average rating %f\n", average_rating);
 	user_stat(1234576);
 	movie_stat(4321);
-	Utils.preprocessMovies(Recommender.movies, true);
-	Utils.preprocessUsers(Recommender.users, true);
+	Utils.preprocessMovies(Recommender.movies, false);
+	Utils.preprocessUsers(Recommender.users, false);
 	System.out.println(Recommender.users.get(1687642).movieRatings);
 	knn(5, users.get(303969), dotProduct);
 	System.out.println(dotProduct.computeSimilarity(Recommender.users.get(303969), Recommender.users.get(1687642)));

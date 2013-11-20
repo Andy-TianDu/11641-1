@@ -46,7 +46,7 @@ public class QryopIndriAnd extends Qryop {
     }
 
     public String toString() {
-	StringBuffer buf = new StringBuffer("#Combine(");
+	StringBuffer buf = new StringBuffer("#And(");
 	for (int i = 0; i < args.size(); i++) {
 	    buf.append(args.get(i).toString());
 	    buf.append(i == args.size() - 1 ? ")" : " ");
