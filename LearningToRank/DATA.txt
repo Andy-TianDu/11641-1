@@ -1,3 +1,0 @@
-train=data/train.txt
-test=data/test.txt
-c=0.0001
