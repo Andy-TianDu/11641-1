@@ -8,7 +8,8 @@
 *.gz
 *.tgz
 *.zip
-
+*.txt
+*.DS_*
 # folders #
 hw2-index
 HW1-tst
