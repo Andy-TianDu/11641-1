@@ -38,7 +38,7 @@ public class LearningToRank {
 		long start = System.currentTimeMillis();
 		lr.train(trainSet);
 		long duration = System.currentTimeMillis() - start;
-		System.out.printf("Training Time: %d s\n", duration % 100);
+		System.out.printf("Training Time: %d s\n", duration / 1000);
 
 		@SuppressWarnings("resource")
 		PrintStream ps = new PrintStream(new File("lr-result-"+ c +".txt"));
