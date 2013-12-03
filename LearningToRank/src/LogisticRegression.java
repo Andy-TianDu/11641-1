@@ -1,4 +1,3 @@
-import java.util.HashMap;
 
 /**
  * Logistic Regression - perform binary classification, output the probability
