@@ -1,4 +1,3 @@
-import java.util.HashMap;
 
 /**
  * Instance
@@ -7,10 +6,11 @@ import java.util.HashMap;
  */
 public class Instance {
 	public int label;
-	public HashMap<Integer, Double> feature = new HashMap<Integer, Double>();
+	public double features[];
 
-	public Instance(int label) {
+	public Instance(int label, int numFeature) {
 		this.label = label;
+		features = new double[numFeature];
 	}
 
 	/**
@@ -31,7 +31,7 @@ public class Instance {
 	}
 
 	public void addFeature(int fid, double value) {
-		feature.put(fid, value);
+		features[fid] = value;
 	}
 	
 	/**
@@ -39,20 +39,19 @@ public class Instance {
 	 */
 	public void normalize() {
 		double norm = 0;
-		for (double value : feature.values()) {
-			norm += value * value;
+		for (double feature : features) {
+			norm += feature * feature;
 		}
 		norm = Math.sqrt(norm);
-		for (int fId : feature.keySet()) {
-			double value = feature.get(fId);
-			feature.put(fId, value / norm);
+		for (int i = 0; i < features.length; i++) {
+			features[i] /= norm;
 		}
 	}
 
 	public String toString() {
 		StringBuffer str = new StringBuffer(String.format("%d ", label));
-		for (int id : feature.keySet())
-			str.append(String.format("%d:%f ", id, feature.get(id)));
+		for (int i = 0; i < features.length; i++)
+			str.append(String.format("%d:%f ", i, features[i]));
 		return str.toString();
 	}
 }

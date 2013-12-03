@@ -57,9 +57,9 @@ public class LearningToRank {
 			throws FileNotFoundException {
 		HashMap<Integer, Query> queries = new HashMap<Integer, Query>();
 		Scanner scanner = new Scanner(new File(trainFile));
-		int numFeature = 0;
 		String line;
 		// read query doc pairs and form training set
+		int numFeature = 44;
 		while (scanner.hasNextLine()) {
 			line = scanner.nextLine();
 			String tokens[] = line.split(" ");
@@ -73,14 +73,12 @@ public class LearningToRank {
 				query = new Query();
 				queries.put(queryId, query);
 			}
-			Instance instance = new Instance(relevance);
-			int nFeature = 0;
+			Instance instance = new Instance(relevance, numFeature);
 			//read features
 			for (int i = 2; i < tokens.length; i++) {
 				if (tokens[i].startsWith("#")) {
 					break;
 				}
-				nFeature++;
 				String pair[] = tokens[i].split(":");
 				instance.addFeature(Integer.parseInt(pair[0]) - 1,
 						Double.parseDouble(pair[1]));
@@ -89,7 +87,6 @@ public class LearningToRank {
 				query.addIrelDoc(instance);
 			} else
 				query.addRelDoc(instance);
-			numFeature = Math.max(numFeature, nFeature);
 		}
 		List<Instance> instances = new ArrayList<Instance>();
 
@@ -112,7 +109,7 @@ public class LearningToRank {
 	public static Instances formTestSet(String testFile)
 			throws FileNotFoundException {
 		Scanner scanner = new Scanner(new File(testFile));
-		int numFeature = 0;
+		int numFeature = 44;
 		String line;
 		// read query doc pairs and form test set
 		List<Instance> instances = new ArrayList<Instance>();
@@ -120,19 +117,16 @@ public class LearningToRank {
 			line = scanner.nextLine();
 			String tokens[] = line.split(" ");
 			int relevance = Integer.parseInt(tokens[0]);
-			Instance instance = new Instance(relevance);
-			int nFeature = 0;
+			Instance instance = new Instance(relevance, numFeature);
 			for (int i = 2; i < tokens.length; i++) {
 				if (tokens[i].startsWith("#")) {
 					break;
 				}
-				nFeature++;
 				String pair[] = tokens[i].split(":");
 				instance.addFeature(Integer.parseInt(pair[0]) - 1,
 						Double.parseDouble(pair[1]));
 			}
 			instances.add(instance);
-			numFeature = Math.max(numFeature, nFeature);
 		}
 		Instances testSet = new Instances(instances, numFeature, 2);
 		return testSet;

@@ -44,11 +44,10 @@ public class LogisticRegression {
 		return 1 / (1 + Math.exp(-z));
 	}
 
-	private double dotProduct(double[] w, HashMap<Integer, Double> feature) {
+	private double dotProduct(double[] w, double[] features) {
 		double product = 0;
-		for (int key : feature.keySet()) {
-			product += feature.get(key) * w[key];
-		}
+		for (int i = 0; i < weights.length; i++)
+			product += weights[i] * features[i];
 		return product;
 	}
 
@@ -60,7 +59,7 @@ public class LogisticRegression {
 	 * @return
 	 */
 	public double predict(Instance instance) {
-		double prob = sigmoid(dotProduct(weights, instance.feature));
+		double prob = sigmoid(dotProduct(weights, instance.features));
 		return prob;
 	}
 
@@ -92,15 +91,9 @@ public class LogisticRegression {
 	private void updateWeights(Instance instance) {
 		int y = instance.getLabel(trueLabel);
 		double prediction = predict(instance);
-		// first iterate through all the weights
-		// update the derivatie of regularization term
 		for (int i = 0; i < weights.length; i++) {
-			weights[i] -= learning_rate * C * weights[i];
-		}
-		// update derivative of likelihood function
-		for (int key : instance.feature.keySet()) {
-				weights[key] += learning_rate * (y - prediction)
-						* instance.feature.get(key);
+			weights[i] += learning_rate * (y - prediction)
+					* instance.features[i] - learning_rate * C * weights[i];
 		}
 	}
 
