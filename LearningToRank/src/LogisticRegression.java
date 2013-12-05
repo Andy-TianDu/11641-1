@@ -35,8 +35,6 @@ public class LogisticRegression {
 			this.learning_rate = 0.005;
 		else
 			this.learning_rate = 0.02;
-		System.out.printf("alpha:%f, C:%f trueLabel:%d\n", learning_rate, C,
-				trueLabel);
 	}
 
 	private double sigmoid(double z) {
@@ -104,8 +102,8 @@ public class LogisticRegression {
 	public void train(Instances trainSet) {
 		double ll = logLikelihood(trainSet);
 		for (int i = 0; i < MAX_ITERATION; i++) {
-			System.out.printf("iteration %d\n", i + 1);
-			trainSet.shuffle();
+//			System.out.printf("iteration %d\n", i + 1);
+//			trainSet.shuffle();
 			for (Instance instance : trainSet.allInstance) {
 				updateWeights(instance);
 			}
@@ -113,7 +111,7 @@ public class LogisticRegression {
 			if (Math.abs(tmp_ll - ll) < epsilon)
 				break;
 			ll = tmp_ll;
-			System.out.printf("log likelood: %f\n", ll);
+//			System.out.printf("log likelood: %f\n", ll);
 		}
 	}
 	
@@ -124,6 +122,14 @@ public class LogisticRegression {
 
 	public int getTrueLabel() {
 		return trueLabel;
+	}
+	
+	public String toString() {
+		StringBuffer buf = new StringBuffer();
+		for (int i = 0; i < weights.length; i++) {
+			buf.append(String.format("%d:%f ", i, weights[i]));
+		}
+		return buf.toString();
 	}
 
 }

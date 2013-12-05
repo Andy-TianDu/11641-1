@@ -10,7 +10,11 @@ public class Query {
 	public List<Instance> relDocs = new ArrayList<Instance>();
 	public List<Instance> irelDocs = new ArrayList<Instance>();
 	public List<Instance> partialRelSet = new ArrayList<Instance>();
-	public static int numFeature = 44;
+	public int numFeature;
+	
+	public Query(int numFeature) {
+		this.numFeature = numFeature;
+	}
 	/**
 	 * form training set from partial relevance judgment
 	 * 

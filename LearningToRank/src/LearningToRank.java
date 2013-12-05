@@ -3,11 +3,14 @@ import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Scanner;
 
 
 public class LearningToRank {
+	
+	private static int numFeature = 44;
 
 	public static void main(String args[]) throws FileNotFoundException {
 		//read parameters
@@ -37,13 +40,14 @@ public class LearningToRank {
 				1);
 		long start = System.currentTimeMillis();
 		lr.train(trainSet);
+//		System.out.println(lr);
 		long duration = System.currentTimeMillis() - start;
-		System.out.printf("Training Time: %d s\n", duration / 1000);
+		System.out.printf("Training Time: %f s\n", (1.0 * duration / 1000));
 
 		@SuppressWarnings("resource")
-		PrintStream ps = new PrintStream(new File("lr-result-"+ c +".txt"));
+		PrintStream ps = System.out;new PrintStream(new File("lr-result.txt"));
 		for (Instance instance : testSet.allInstance) {
-			ps.println(lr.predict(instance));
+//			ps.println(lr.predict(instance));
 		}
 	}
 
@@ -55,11 +59,10 @@ public class LearningToRank {
 	 */
 	public static Instances formTrainSet(String trainFile)
 			throws FileNotFoundException {
-		HashMap<Integer, Query> queries = new HashMap<Integer, Query>();
+		HashMap<Integer, Query> queries = new LinkedHashMap<Integer, Query>();
 		Scanner scanner = new Scanner(new File(trainFile));
 		String line;
 		// read query doc pairs and form training set
-		int numFeature = 44;
 		while (scanner.hasNextLine()) {
 			line = scanner.nextLine();
 			String tokens[] = line.split(" ");
@@ -70,7 +73,7 @@ public class LearningToRank {
 			if (queries.containsKey(queryId)) {
 				query = queries.get(queryId);
 			} else {
-				query = new Query();
+				query = new Query(numFeature);
 				queries.put(queryId, query);
 			}
 			Instance instance = new Instance(relevance, numFeature);
@@ -83,6 +86,7 @@ public class LearningToRank {
 				instance.addFeature(Integer.parseInt(pair[0]) - 1,
 						Double.parseDouble(pair[1]));
 			}
+			instance.addCustomFeature();
 			if (relevance == 0) {
 				query.addIrelDoc(instance);
 			} else
@@ -90,7 +94,9 @@ public class LearningToRank {
 		}
 		List<Instance> instances = new ArrayList<Instance>();
 
-		for (Query query : queries.values()) {
+		for (int qid : queries.keySet()) {
+//			System.out.println(qid);
+			Query query = queries.get(qid);
 			query.normalize();
 			for (Instance instance : query.formTrainSet()) {
 				instances.add(instance);
@@ -109,7 +115,6 @@ public class LearningToRank {
 	public static Instances formTestSet(String testFile)
 			throws FileNotFoundException {
 		Scanner scanner = new Scanner(new File(testFile));
-		int numFeature = 44;
 		String line;
 		// read query doc pairs and form test set
 		List<Instance> instances = new ArrayList<Instance>();
@@ -126,9 +131,12 @@ public class LearningToRank {
 				instance.addFeature(Integer.parseInt(pair[0]) - 1,
 						Double.parseDouble(pair[1]));
 			}
+			instance.addCustomFeature();
 			instances.add(instance);
 		}
 		Instances testSet = new Instances(instances, numFeature, 2);
 		return testSet;
 	}
+	
+	
 }
